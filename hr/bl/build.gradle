@@ -1,4 +1,4 @@
 apply plugin: 'java'
 dependencies {
-implementation files('../dbdl/build/libs/dbdl.jar','../common/dist/hr-common.jar')
+implementation files('../dl/dist/hr-dl-1.0.jar','../common/dist/hr-common.jar')
 }

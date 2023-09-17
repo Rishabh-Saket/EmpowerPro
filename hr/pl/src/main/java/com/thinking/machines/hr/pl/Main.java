@@ -1,10 +1,10 @@
 package com.thinking.machines.hr.pl;
 import com.thinking.machines.hr.pl.ui.*;
-class Main
+public class Main
 {
-	public static void main(String args[])
+	public static void main(String args[]) 
 	{
-		DesignationUI designationUI=new DesignationUI();
-		designationUI.setVisible(true);
+		DesignationUI designatioUI=new DesignationUI();
+		designatioUI.setVisible(true);
 	}
 }

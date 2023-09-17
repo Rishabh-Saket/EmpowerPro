@@ -6,18 +6,9 @@ import com.thinking.machines.hr.bl.pojo.*;
 import com.thinking.machines.hr.bl.exceptions.*;
 import javax.swing.table.*;
 import java.util.*;
-import java.io.*;
-import com.itextpdf.kernel.pdf.*;
-import com.itextpdf.io.image.*;
-import com.itextpdf.kernel.font.*;
-import com.itextpdf.io.font.constants.*;
-import com.itextpdf.layout.*;
-import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.property.*;
-import com.itextpdf.layout.borders.*;
 public class DesignationModel extends AbstractTableModel
 {
-	private java.util.List<DesignationInterface> designations;
+	private List<DesignationInterface> designations;
 	private DesignationManagerInterface designationManager;
 	private String[] columnTitle;
 	public DesignationModel()
@@ -181,164 +172,12 @@ public class DesignationModel extends AbstractTableModel
 	
 	public DesignationInterface getDesignationAt(int index) throws BLException
 	{
-		if(index<0 || index>=this.designations.size()) 
+		if(index<0 || index>=this.designations.size())
 		{
 			BLException blException=new BLException();
 			blException.setGenericException("Invalid index: "+index);
 			throw blException;
 		}
 		return this.designations.get(index);
-	}
-	
-	public void exportToPDF(File file) throws BLException
-	{
-		try
-		{
-			if(file.exists()) file.delete();
-			PdfWriter pdfWriter=new PdfWriter(file);
-			PdfDocument pdfDocument=new PdfDocument(pdfWriter);
-			Document document=new Document(pdfDocument);
-			
-			// adding comapny's logo
-			Image logo=new Image(ImageDataFactory.create(this.getClass().getResource("/icons/logo_icon.png")));
-			Paragraph logoPara=new Paragraph();
-			logoPara.add(logo);
-			
-			// company name
-			Paragraph companyNamePara=new Paragraph();
-			companyNamePara.add("Saket's Corporation");
-			
-			//font for company 
-			PdfFont companyNameFont=PdfFontFactory.createFont(StandardFonts.TIMES_BOLD);
-			companyNamePara.setFont(companyNameFont);
-			companyNamePara.setFontSize(18);
-			
-			//title for report
-			Paragraph reportTitlePara=new Paragraph("List of designations");
-			PdfFont reportTitleFont=PdfFontFactory.createFont(StandardFonts.TIMES_BOLD);
-			reportTitlePara.setFont(reportTitleFont);
-			reportTitlePara.setFontSize(15);
-			
-			//font for title of table
-			PdfFont columnTitleFont=PdfFontFactory.createFont(StandardFonts.TIMES_BOLD);
-			PdfFont pageNumberFont=PdfFontFactory.createFont(StandardFonts.TIMES_BOLD);
-			PdfFont dataFont=PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN);
-			//Declaring titles of column
-			Paragraph columnTitle1=new Paragraph("S.No");
-			columnTitle1.setFont(columnTitleFont);
-			columnTitle1.setFontSize(14);
-			
-			Paragraph columnTitle2=new Paragraph("Designations");
-			columnTitle2.setFont(columnTitleFont);
-			columnTitle2.setFontSize(14);
-			
-			//Now creating every dynamic factors that will be initialized during logic
-			
-			Paragraph pageNumberParagraph;
-			Paragraph dataParagraph;
-			
-			float topTableColumnWidths[]= {1,5}; // parameters to set logo and company name
-			float dataTableColumnWidths[]= {1,5}; // parameters for actual data
-			
-			
-			//now actual logic 
-			int sno,x,pageSize;
-			sno=0;
-			x=0;
-			pageSize=5;			
-			boolean newPage;
-			newPage=true;
-			Table topTable; //table to set logo and company name
-			Table dataTable=null; //table to set data
-			Table pageNumberTable; //table for page number 
-			Cell cell;
-			int pageNumber=0;
-			int numberOfPages=this.designations.size()/pageSize;
-			if(this.designations.size()%pageSize!=0) numberOfPages++;
-			DesignationInterface designation;
-			while(x<this.designations.size())
-			{
-				if(newPage)
-				{
-					// create header
-					pageNumber++;
-					topTable=new Table(UnitValue.createPercentArray(topTableColumnWidths));
-					cell=new Cell();
-					cell.setBorder(Border.NO_BORDER);
-					cell.add(logoPara);
-					topTable.addCell(cell);
-					
-					cell=new Cell();
-					cell.setBorder(Border.NO_BORDER);
-					cell.add(companyNamePara);
-					cell.setVerticalAlignment(VerticalAlignment.MIDDLE);
-					topTable.addCell(cell);
-					
-					document.add(topTable);
-					
-					pageNumberParagraph=new Paragraph("Page: "+pageNumber+"/"+numberOfPages);
-					pageNumberParagraph.setFont(pageNumberFont);
-					pageNumberParagraph.setFontSize(10);
-					
-					pageNumberTable=new Table(1);
-					pageNumberTable.setWidth(UnitValue.createPercentValue(100));
-					cell=new Cell();
-					cell.add(pageNumberParagraph);
-					cell.setBorder(Border.NO_BORDER);
-					cell.setTextAlignment(TextAlignment.RIGHT);
-					pageNumberTable.addCell(cell);
-					document.add(pageNumberTable);
-					
-					//creating data table
-					dataTable=new Table(UnitValue.createPercentArray(dataTableColumnWidths));
-					dataTable.setWidth(UnitValue.createPercentValue(100));
-					
-					cell=new Cell(1,2);
-					cell.add(reportTitlePara);
-					cell.setTextAlignment(TextAlignment.CENTER);
-					dataTable.addHeaderCell(cell);
-					dataTable.addHeaderCell(columnTitle1);
-					dataTable.addHeaderCell(columnTitle2);									
-					newPage=false;					
-				}
-				designation=this.designations.get(x);
-				sno++;
-				x++;
-				
-				cell=new Cell();
-				dataParagraph=new Paragraph(String.valueOf(sno));
-				dataParagraph.setFont(dataFont);
-				dataParagraph.setFontSize(14);
-				cell.add(dataParagraph);
-				cell.setTextAlignment(TextAlignment.RIGHT);
-				dataTable.addCell(cell);
-				
-				cell=new Cell();
-				dataParagraph=new Paragraph(designation.getTitle());
-				dataParagraph.setFont(dataFont);
-				dataParagraph.setFontSize(14);
-				cell.add(dataParagraph);
-				dataTable.addCell(cell);
-				
-				if(sno%pageSize==0 || x==this.designations.size())
-				{
-					//create footer
-					document.add(dataTable);
-					document.add(new Paragraph("Software by: Saket"));
-					if(x<this.designations.size())
-					{
-						// add new page
-						document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-						newPage=true;
-					}
-				}
-			}	
-			document.close();
-		}catch(Exception exception)
-		{
-			BLException blException=new BLException();
-			blException.setGenericException(exception.getMessage());
-			throw blException;
-		}
 	}
 }

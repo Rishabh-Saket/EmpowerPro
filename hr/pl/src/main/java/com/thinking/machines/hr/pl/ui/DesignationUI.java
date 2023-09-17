@@ -9,8 +9,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
-import javax.swing.filechooser.*;
-import java.io.*;
 public class DesignationUI extends JFrame implements DocumentListener,ListSelectionListener
 {
 	private JLabel titleLabel;
@@ -25,14 +23,6 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 	private DesignationPanel designationPanel;
 	private enum MODE{VIEW,ADD,EDIT,DELETE,EXPORT_TO_PDF};
 	private MODE mode;
-	private ImageIcon logoIcon;
-	private ImageIcon addIcon;
-	private ImageIcon deleteIcon;
-	private ImageIcon editIcon;
-	private ImageIcon cancelIcon;
-	private ImageIcon clearIcon;
-	private ImageIcon saveIcon;
-	private ImageIcon pdfIcon;
 	public DesignationUI()
 	{
 		initComponents();
@@ -44,20 +34,12 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 	
 	private void initComponents()
 	{
-		logoIcon=new ImageIcon(this.getClass().getResource("/icons/logo_icon.png"));
-		addIcon=new ImageIcon(this.getClass().getResource("/icons/add_icon.png"));
-		deleteIcon=new ImageIcon(this.getClass().getResource("/icons/delete_icon.png"));
-		cancelIcon=new ImageIcon(this.getClass().getResource("/icons/cancel_icon.png"));
-		editIcon=new ImageIcon(this.getClass().getResource("/icons/edit_icon.png"));
-		clearIcon=new ImageIcon(this.getClass().getResource("/icons/clear_icon.png"));
-		pdfIcon=new ImageIcon(this.getClass().getResource("/icons/pdf_icon.png"));
-		saveIcon=new ImageIcon(this.getClass().getResource("/icons/save_icon.png"));
 		designationModel=new DesignationModel();
 		titleLabel=new JLabel("Designations");
 		searchLabel=new JLabel("Search");
 		searchErrorLabel=new JLabel("");
 		searchTextField=new JTextField();
-		clearSearchButton=new JButton(clearIcon);
+		clearSearchButton=new JButton("X");
 		designationTable=new JTable(designationModel);
 		designationPanel=new DesignationPanel();
 		scrollPane=new JScrollPane(designationTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -66,7 +48,6 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 	
 	private void setAppearance()
 	{
-		setIconImage(logoIcon.getImage());
 		Font titleFont=new Font("Verdana",Font.BOLD,18);
 		Font captionFont=new Font("Verdana",Font.BOLD,16);
 		Font dataFont=new Font("Verdana",Font.PLAIN,16);
@@ -178,48 +159,48 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 		this.mode=MODE.VIEW;
 		if(designationModel.getRowCount()==0)
 		{
-			searchTextField.setEnabled(false);
-			clearSearchButton.setEnabled(false);
-			designationTable.setEnabled(false);
+			this.searchTextField.setEnabled(false);
+			this.clearSearchButton.setEnabled(false);
+			this.designationTable.setEnabled(false);
 		}
 		else
 		{
-			searchTextField.setEnabled(true);
-			clearSearchButton.setEnabled(true);
-			designationTable.setEnabled(true);
+			this.searchTextField.setEnabled(true);
+			this.clearSearchButton.setEnabled(true);
+			this.designationTable.setEnabled(true);
 		}
 	}
 	
 	private void setAddMode()
 	{
 		this.mode=MODE.ADD;
-		searchTextField.setEnabled(false);
-		clearSearchButton.setEnabled(false);
-		designationTable.setEnabled(false);
+		this.searchTextField.setEnabled(false);
+		this.clearSearchButton.setEnabled(false);
+		this.designationTable.setEnabled(false);
 	}
 	
 	private void setEditMode()
 	{
 		this.mode=MODE.EDIT;
-		searchTextField.setEnabled(false);
-		clearSearchButton.setEnabled(false);
-		designationTable.setEnabled(false);
+		this.searchTextField.setEnabled(false);
+		this.clearSearchButton.setEnabled(false);
+		this.designationTable.setEnabled(false);
 	}
 	
 	private void setDeleteMode()
 	{
 		this.mode=MODE.DELETE;
-		searchTextField.setEnabled(false);
-		clearSearchButton.setEnabled(false);
-		designationTable.setEnabled(false);
+		this.searchTextField.setEnabled(false);
+		this.clearSearchButton.setEnabled(false);
+		this.designationTable.setEnabled(false);
 	}
 	
 	private void setExportToPDFMode()
 	{
 		this.mode=MODE.EXPORT_TO_PDF;
-		searchTextField.setEnabled(false);
-		clearSearchButton.setEnabled(false);
-		designationTable.setEnabled(false);
+		this.searchTextField.setEnabled(false);
+		this.clearSearchButton.setEnabled(false);
+		this.designationTable.setEnabled(false);
 	}
 	
 	//inner class
@@ -251,13 +232,13 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 			titleCaptionLabel=new JLabel("Designation");
 			titleLabel=new JLabel("");
 			titleTextField=new JTextField();
-			clearTitleTextFieldButton=new JButton(clearIcon);
+			clearTitleTextFieldButton=new JButton("X");
 			buttonsPanel=new JPanel();
-			addButton=new JButton(addIcon);
-			editButton=new JButton(editIcon);
-			cancelButton=new JButton(cancelIcon);
-			deleteButton=new JButton(deleteIcon);
-			exportToPDFButton=new JButton(pdfIcon);
+			addButton=new JButton("A");
+			editButton=new JButton("E");
+			cancelButton=new JButton("C");
+			deleteButton=new JButton("D");
+			exportToPDFButton=new JButton("E");
 		}
 		
 		public void setDesignation(DesignationInterface designation)
@@ -308,47 +289,49 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 		
 		private boolean addDesignation()
 		{
-			String title=titleTextField.getText().trim();
+			String title=this.titleTextField.getText().trim();
 			if(title.length()==0)
 			{
 				JOptionPane.showMessageDialog(this,"Designation required");
 				this.titleTextField.requestFocus();
 				return false;
 			}
-			DesignationInterface d=new Designation();
-			d.setTitle(title);
-			try
+			else
 			{
-				designationModel.add(d);
-				int rowIndex=0;
+				DesignationInterface d=new Designation();
+				d.setTitle(title);
 				try
 				{
-					rowIndex=designationModel.indexOfDesignation(d);
-					
+					designationModel.add(d);
+					int rowIndex=0;
+					try
+					{						
+						rowIndex=designationModel.indexOfDesignation(d);						
+					}catch(BLException blException)
+					{
+						//do nothing
+					}
+					designationTable.setRowSelectionInterval(rowIndex,rowIndex);
+					Rectangle rectangle=designationTable.getCellRect(rowIndex,0,true);
+					designationTable.scrollRectToVisible(rectangle);
+					return true;
 				}catch(BLException blException)
 				{
-					
-				}
-				designationTable.setRowSelectionInterval(rowIndex,rowIndex);
-				Rectangle rectangle=designationTable.getCellRect(rowIndex,0,true);
-				designationTable.scrollRectToVisible(rectangle);
-				return true;
-			}catch(BLException blException)
-			{
-				if(blException.hasGenericException())
-				{
-					JOptionPane.showMessageDialog(this,blException.getGenericException());
-				}
-				else
-				{
-					if(blException.hasException("title"))
+					if(blException.hasGenericException())
 					{
-						JOptionPane.showMessageDialog(this,blException.getException("title"));
+						JOptionPane.showMessageDialog(this,blException.getGenericException());
 					}
+					else
+					{
+						if(blException.hasException("title"))
+						{
+							JOptionPane.showMessageDialog(this,blException.getException("title"));
+						}
+					}
+					this.titleTextField.requestFocus();
+					return false;
 				}
 			}
-			this.titleTextField.requestFocus();
-			return false;
 		}
 		
 		private boolean updateDesignation()
@@ -361,10 +344,10 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 				return false;
 			}
 			DesignationInterface d=new Designation();
-			d.setCode(this.designation.getCode());
 			d.setTitle(title);
+			d.setCode(this.designation.getCode());
 			try
-			{
+			{	
 				designationModel.update(d);
 				int rowIndex=0;
 				try
@@ -372,8 +355,8 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 					rowIndex=designationModel.indexOfDesignation(d);
 				}catch(BLException blException)
 				{
-					
-				}
+					// do nothing
+				}	
 				designationTable.setRowSelectionInterval(rowIndex,rowIndex);
 				Rectangle rectangle=designationTable.getCellRect(rowIndex,0,true);
 				designationTable.scrollRectToVisible(rectangle);
@@ -402,11 +385,10 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 			try
 			{
 				String title=this.designation.getTitle();
-				int selectedOption=JOptionPane.showConfirmDialog(this,"Delete "+title+" ?","Confirmation Dialog",JOptionPane.YES_NO_OPTION);
+				int selectedOption=JOptionPane.showConfirmDialog(this,"Delete: "+title+" ?","Comfirmation Dialog",JOptionPane.YES_NO_OPTION);
 				if(selectedOption==JOptionPane.NO_OPTION) return;
 				designationModel.remove(this.designation.getCode());
-				JOptionPane.showMessageDialog(this,title+" deleted");
-				this.clearDesignation();
+				JOptionPane.showMessageDialog(this,"Designation: "+title+" deleted");
 			}catch(BLException blException)
 			{
 				if(blException.hasGenericException())
@@ -434,10 +416,14 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 					}
 					else
 					{
-						if(addDesignation()) setViewMode();	
+						if(addDesignation())
+						{
+						setViewMode();
+						}
 					}
 				}
 			});
+			
 			this.editButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ev)
 				{
@@ -447,15 +433,14 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 					}
 					else
 					{
-						if(updateDesignation()) setViewMode();						
+						if(updateDesignation()) setViewMode();
 					}
 				}
 			});
 			
 			this.cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ev)
-				{				
-						setViewMode();
+				public void actionPerformed(ActionEvent ev) {
+					setViewMode();
 				}
 			});
 			
@@ -465,87 +450,29 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 					setDeleteMode();
 				}
 			});
-			
-			this.exportToPDFButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ev)
-				{
-					JFileChooser fileChooser=new JFileChooser();
-					fileChooser.setCurrentDirectory(new File("."));
-					fileChooser.setAcceptAllFileFilterUsed(false);
-					fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-						public boolean accept(File file)
-						{
-							if(file.isDirectory()) return true;
-							if(file.getName().endsWith(".java")) return true;
-							return false;
-						}
-						
-						public String getDescription()
-						{
-							return "Java Files";
-						}
-					});
-					int selectedOption=fileChooser.showSaveDialog(DesignationUI.this);
-					if(selectedOption==JFileChooser.APPROVE_OPTION)
-					{
-						try
-						{
-							File selectedFile=fileChooser.getSelectedFile();
-							String pdfFile=selectedFile.getAbsolutePath();
-							if(pdfFile.endsWith(".")) pdfFile+="pdf";
-							else if(pdfFile.endsWith(".pdf")==false) pdfFile+=".pdf";
-							File file=new File(pdfFile);
-							File parent=new File(file.getParent());
-							if(parent.exists()==false || parent.isDirectory()==false)
-							{
-								JOptionPane.showMessageDialog(DesignationUI.this,"Incorrect Path: "+pdfFile);
-								return;
-							}
-							designationModel.exportToPDF(file);
-							JOptionPane.showMessageDialog(DesignationUI.this,"Data exported to: "+pdfFile);
-						}catch(BLException blException)
-						{
-							if(blException.hasGenericException())
-							{
-								JOptionPane.showMessageDialog(DesignationUI.this,blException.getGenericException());
-							}
-						}
-						catch(Exception e)
-						{
-							System.out.println(e.getMessage());
-						}
-					}
-				}
-			});
-			this.clearTitleTextFieldButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent ev)
-				{
-					titleTextField.setText("");
-				}
-			});
 		}
 		
 		void setViewMode()
 		{
 			DesignationUI.this.setViewMode();
-			this.addButton.setIcon(addIcon);
-			this.editButton.setIcon(editIcon);
-			this.titleTextField.setVisible(false);
 			this.titleLabel.setVisible(true);
+			this.titleTextField.setVisible(false);
 			this.clearTitleTextFieldButton.setVisible(false);
 			this.addButton.setEnabled(true);
 			this.cancelButton.setEnabled(false);
-			if(designationModel.getRowCount()>0)
-			{
-				this.editButton.setEnabled(true);
-				this.deleteButton.setEnabled(true);
-				this.exportToPDFButton.setEnabled(true);
-			}
-			else
+			this.addButton.setText("A");
+			this.editButton.setText("E");
+			if(designationModel.getRowCount()==0)
 			{
 				this.editButton.setEnabled(false);
 				this.deleteButton.setEnabled(false);
 				this.exportToPDFButton.setEnabled(false);
+			}
+			else
+			{
+				this.editButton.setEnabled(true);
+				this.deleteButton.setEnabled(true);
+				this.exportToPDFButton.setEnabled(true);
 			}
 		}
 		
@@ -553,49 +480,48 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 		{
 			DesignationUI.this.setAddMode();
 			this.titleTextField.setText("");
-			this.titleLabel.setVisible(true);
+			this.titleLabel.setVisible(false);
 			this.titleTextField.setVisible(true);
-			this.titleTextField.requestFocus();
 			this.clearTitleTextFieldButton.setVisible(true);
-			this.addButton.setIcon(saveIcon);
-			cancelButton.setEnabled(true);
-			editButton.setEnabled(false);
-			deleteButton.setEnabled(false);
-			exportToPDFButton.setEnabled(false);
+			this.addButton.setText("S");
+			this.cancelButton.setEnabled(true);
+			this.editButton.setEnabled(false);
+			this.deleteButton.setEnabled(false);
+			this.exportToPDFButton.setEnabled(false);
 		}
 		
 		void setEditMode()
 		{
 			if(designationTable.getSelectedRow()<0 || designationTable.getSelectedRow()>=designationModel.getRowCount())
 			{
-				JOptionPane.showMessageDialog(this,"Select designation to edit");
+				JOptionPane.showMessageDialog(this,"Please select designation to edit");
 				return;
 			}
 			DesignationUI.this.setEditMode();
-			this.titleTextField.setText(this.designation.getTitle());
 			this.titleLabel.setVisible(false);
+			this.titleTextField.setText(this.designation.getTitle());
 			this.titleTextField.setVisible(true);
 			this.clearTitleTextFieldButton.setVisible(true);
-			addButton.setEnabled(false);
-			cancelButton.setEnabled(true);
-			deleteButton.setEnabled(false);
-			exportToPDFButton.setEnabled(false);
-			editButton.setIcon(saveIcon);
+			this.addButton.setEnabled(false);
+			this.deleteButton.setEnabled(false);
+			this.cancelButton.setEnabled(true);
+			this.exportToPDFButton.setEnabled(false);
+			this.editButton.setText("U");
 		}
 		
 		void setDeleteMode()
 		{
 			if(designationTable.getSelectedRow()<0 || designationTable.getSelectedRow()>=designationModel.getRowCount())
 			{
-				JOptionPane.showMessageDialog(this,"Select designation to delete");
+				JOptionPane.showMessageDialog(this,"Please select designation to delete");
 				return;
 			}
 			DesignationUI.this.setDeleteMode();
-			addButton.setEnabled(false);
-			editButton.setEnabled(false);
-			cancelButton.setEnabled(false);
-			deleteButton.setEnabled(false);
-			exportToPDFButton.setEnabled(false);
+			this.addButton.setEnabled(false);
+			this.editButton.setEnabled(false);
+			this.cancelButton.setEnabled(false);
+			this.exportToPDFButton.setEnabled(false);
+			this.deleteButton.setEnabled(false);
 			deleteDesignation();
 			setViewMode();
 		}
@@ -603,13 +529,12 @@ public class DesignationUI extends JFrame implements DocumentListener,ListSelect
 		void setExportToPDFMode()
 		{
 			DesignationUI.this.setExportToPDFMode();
-			addButton.setEnabled(false);
-			editButton.setEnabled(false);
-			cancelButton.setEnabled(false);
-			deleteButton.setEnabled(false);
-			exportToPDFButton.setEnabled(false);
+			this.addButton.setEnabled(false);
+			this.editButton.setEnabled(false);
+			this.cancelButton.setEnabled(false);
+			this.deleteButton.setEnabled(false);
+			this.exportToPDFButton.setEnabled(false);
 		}
-			
 	}//inner class ends
 	
 }
