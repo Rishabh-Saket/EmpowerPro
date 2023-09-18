@@ -1,13 +1,19 @@
-42        
-36        
+43        
+41        
+1
+clerk
 2
 Consultant
 4
 Driver
+5
+Cook
 6
 Liftman
 7
-Tutor
+Teacher
+8
+Assistant
 9
 Mechanic
 10
@@ -15,7 +21,7 @@ Mason
 11
 Operator
 12
-Web Developer
+Web Designer
 13
 Peon
 14
@@ -26,10 +32,14 @@ Optometrist
 Surgeon
 17
 Supervisor
+18
+Cardiologist
 19
 Phsycatrist'
 20
 Administrator
+21
+Carpenter
 22
 Warden
 23
@@ -42,8 +52,6 @@ UI/UX Designer
 Zoologist
 27
 Geologist
-28
-Biologist
 29
 Urologist
 30
@@ -53,7 +61,7 @@ Railway Gaurd
 32
 Retailer
 33
-Staff Manager
+Bussiness Analyst
 34
 Freelancer
 35
@@ -65,10 +73,12 @@ Plumber
 38
 Singer
 39
-Zoo keeper
+Advocate
 40
-Nurse
+Zoo Keeper
 41
-Technician
+Nurse
 42
-Accountant
+cooking instructor
+43
+Journalist

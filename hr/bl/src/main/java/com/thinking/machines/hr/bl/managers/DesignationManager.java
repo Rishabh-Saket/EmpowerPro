@@ -212,6 +212,7 @@ public class DesignationManager implements DesignationManagerInterface
 		}catch(DAOException daoException)
 		{
 			blException.setGenericException(daoException.getMessage());
+			throw blException;
 		}
 	}
 	public DesignationInterface getDesignationByCode(int code) throws BLException
