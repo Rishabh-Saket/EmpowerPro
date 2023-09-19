@@ -4,6 +4,9 @@ import com.thinking.machines.hr.bl.interfaces.pojo.*;
 import com.thinking.machines.hr.bl.exceptions.*;
 import com.thinking.machines.hr.bl.pojo.*;
 import java.util.*;
+import com.thinking.machines.network.common.*;
+import com.thinking.machines.network.common.exceptions.*;
+import com.thinking.machines.network.client.*;
 public class DesignationManager implements DesignationManagerInterface
 {
 	private static DesignationManager designationManager=null;
@@ -22,8 +25,55 @@ public class DesignationManager implements DesignationManagerInterface
 	public void addDesignation(DesignationInterface designation) throws BLException
 	{
 		BLException blException=new BLException();
-		blException.setGenericException("Not yet Implemented");
-		throw blException;
+		if(designation==null)
+		{
+			blException.setGenericException("Designation required");
+			throw blException;
+		}
+		int code=designation.getCode();
+		String title=designation.getTitle();
+		if(code!=0)
+		{
+			blException.addException("code","Code should be zero");
+		}
+		if(title==null)
+		{
+			blException.addException("Title","Title required");
+			title="";
+		}
+		else
+		{
+			title=title.trim();
+			if(title.length()==0)
+			{
+				blException.addException("title","Title required");
+			}
+		}
+		if(blException.hasExceptions())
+		{
+			throw blException;
+		}
+		Request request=new Request();
+		request.setManager("DesignationManager");
+		request.setAction("add");
+		request.setArguments(designation);
+
+		NetworkClient networkClient=new NetworkClient();
+		try 
+		{
+			Response response=networkClient.send(request);
+			if(response.hasException())
+			{
+				blException=(BLException)response.getException();
+				throw blException;
+			}
+			DesignationInterface d=(DesignationInterface)response.getResult();
+			designation.setCode(d.getCode());			
+		}catch (NetworkException networkException) 
+		{
+			blException=new BLException();
+			blException.setGenericException(networkException.getMessage());
+		}
 	}
 	public void updateDesignation(DesignationInterface designation) throws BLException
 	{
