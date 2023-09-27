@@ -5,15 +5,13 @@ import com.thinking.machines.network.server.*;
 import java.net.*;
 public class NetworkServer
 {
-    private Socket socket;
     private RequestHandlerInterface requestHandler;
-    public NetworkServer(Socket socket,RequestHandlerInterface requestHandler) throws NetworkException
+    public NetworkServer(RequestHandlerInterface requestHandler) throws NetworkException
     {
         if(requestHandler==null)
         {
             throw new NetworkException("Request handler is missing");
         }
-        this.socket=socket;
         this.requestHandler=requestHandler;
     }
 

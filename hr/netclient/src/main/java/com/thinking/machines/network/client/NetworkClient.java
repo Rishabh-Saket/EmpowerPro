@@ -58,7 +58,7 @@ public class NetworkClient
             int j=0;
             while(j<bytesToSend)
             {
-                if((bytesToSend-j)<chunkSize) j=bytesToSend-j;
+                if((bytesToSend-j)<1024) chunkSize=bytesToSend-j;
                 os.write(bytes, j, chunkSize);
                 os.flush();
                 j=j+chunkSize;

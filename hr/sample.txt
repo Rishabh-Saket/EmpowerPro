@@ -1,0 +1,152 @@
+import java.io.*;
+import java.net.*;
+
+class City implements Serializable
+{
+    public int code;
+    public String name;
+}
+class Student implements Serializable
+{
+    public int rollNumber;
+    public String name;
+    public String gender;
+    public City city;
+}
+
+class Client3
+{
+    public static void main(String[] args)
+    {
+        try
+        {                
+            int rollNumber=Integer.parseInt(args[0]);
+            String name=args[1];
+            String gender=args[2];
+            int cityCode=Integer.parseInt(args[3]);
+            String cityName=args[4];
+            City city=new City();
+            city.code=cityCode;
+            city.name=cityName;
+            Student s1=new Student();
+            s1.rollNumber=rollNumber;
+            s1.name=name;
+            s1.gender=gender;
+            s1.city=city;
+
+            ByteArrayOutputStream baos=new ByteArrayOutputStream();
+            ObjectOutputStream oos=new ObjectOutputStream(baos);
+            oos.writeObject(s1);
+            oos.flush();
+            byte objectBytes[];
+            objectBytes=baos.toByteArray();
+            int requestLength=objectBytes.length;
+            byte header[]=new byte[1024];
+            int x,i;
+            x=requestLength;
+            i=1023;
+            while(x>0)
+            {
+                header[i]=(byte)(x%10);
+                x/=10;
+                i--;
+            }
+            Socket socket=new Socket("localhost",5502);
+            OutputStream os=socket.getOutputStream();
+            os.write(header, 0, 1024); //from which index , how many 
+            os.flush();
+            InputStream is=socket.getInputStream();
+            byte ack[]=new byte[1]; // array to recieve acknowledgment
+            int bytesReadCount;
+            while(true)
+            {
+                bytesReadCount=is.read(ack);
+                if(bytesReadCount==-1) continue;
+                break;
+            }
+            int bytesToSend=requestLength;
+            int chunkSize,j;
+            chunkSize=1024;
+            j=0;
+            while(j<bytesToSend)
+            {
+                if((bytesToSend-j)<1024) chunkSize=bytesToSend-j;
+                os.write(objectBytes, j, chunkSize);
+                os.flush();
+                j+=chunkSize;
+            }
+
+            int bytesToRecieve=1024;
+            byte tmp[]=new byte[1024];
+            j=0;
+            i=0;
+            int k;
+            while(j<bytesToRecieve)
+            {
+                bytesReadCount=is.read(tmp);
+                if(bytesReadCount==-1) continue;
+                for(k=0;k<bytesReadCount;k++)
+                {
+                    header[i]=tmp[k];
+                    i++;
+                }
+                j+=bytesReadCount;
+            }
+
+            int responseLength=0;
+            i=1;
+            j=1023;
+            while(j>=0)
+            {
+                responseLength+=header[j]*i;
+                i*=10;
+                j--;
+            }
+            
+            ack[0]=1;
+            os.write(ack, 0, 1);
+            os.flush();
+            System.out.println("Acknowledge Sent");
+
+            byte response[]=new byte[responseLength];
+
+            bytesToRecieve=responseLength;
+            j=0;
+            i=0;
+            System.out.println("Now recieving response");
+            while(j<bytesToRecieve)
+            {
+                bytesReadCount=is.read(tmp);
+                if(bytesReadCount==-1) continue;
+                for(k=0;k<bytesReadCount;k++)
+                {
+                    response[i]=tmp[k];
+                    i++;
+                }
+                j+=bytesReadCount;
+            }
+            System.out.println("response recieved");
+            responseLength=0;
+            i=1;
+            j=1023;
+            while(j>=0)
+            {
+                responseLength+=header[j]*i;
+                i*=10;
+                j--;
+            }
+
+            ack[0]=1;
+            os.write(ack, 0, 1);
+            os.flush();
+            socket.close();
+            ByteArrayInputStream bais=new ByteArrayInputStream(response);
+            ObjectInputStream ois=new ObjectInputStream(bais);
+            String responseString=(String)ois.readObject();
+            System.out.println("Response string: "+responseString);
+        }catch(Exception e)
+        {
+            System.out.print(e);
+        }
+    }
+}

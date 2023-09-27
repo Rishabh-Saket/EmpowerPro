@@ -1,0 +1,4 @@
+apply plugin: 'java'
+dependencies {
+    implementation files('../netcommon/build/libs/netcommon.jar','../bl/build/libs/bl.jar','../netserver/build/libs/netserver.jar');
+}
